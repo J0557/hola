@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Gato</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            border: 2px solid #333;
+            cursor: pointer;
+            background-color: #fff;
+        }
+        .cell:hover {
+            background-color: #eaeaea;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div id="game"></div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const gameBoard = document.getElementById('game');
+        const statusDisplay = document.getElementById('status');
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let isGameActive = true;
+
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        const createBoard = () => {
+            board.forEach((cell, index) => {
+                const cellElement = document.createElement('div');
+                cellElement.classList.add('cell');
+                cellElement.setAttribute('data-cell-index', index);
+                cellElement.innerText = cell;
+                cellElement.addEventListener('click', handleCellClick);
+                gameBoard.appendChild(cellElement);
+            });
+        };
+
+        const handleCellClick = (event) => {
+            const cellIndex = event.target.getAttribute('data-cell-index');
+            if (board[cellIndex] || !isGameActive) {
+                return;
+            }
+            updateCell(cellIndex);
+            checkWinner();
+        };
+
+        const updateCell = (index) => {
+            board[index] = currentPlayer;
+            const cellElements = document.querySelectorAll('.cell');
+            cellElements[index].innerText = currentPlayer;
+        };
+
+        const checkWinner = () => {
+            for (let condition of winningConditions) {
+                const [a, b, c] = condition;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    isGameActive = false;
+                    statusDisplay.innerText = `Jugador ${currentPlayer} gana!`;
+                    return;
+                }
+            }
+            if (!board.includes('')) {
+                statusDisplay.innerText = '¡Es un empate!';
+                isGameActive = false;
+                return;
+            }
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        };
+
+        createBoard();
+    </script>
+</body>
+</html>
